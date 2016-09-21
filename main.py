@@ -5,7 +5,7 @@ width = 50
 height = 50
 
 floor = '.'
-wall = '*'
+wall = '#'
 impass = '~'
 
 map = []
@@ -41,8 +41,15 @@ for i in range(num_dolmens):
     make_dolmen(x, y, r)
 # test_dolmens()
 
+def get_orthog_neighbors(x, y):
+   return [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
 
-    
+for i_y, row in enumerate(map):
+    for i_x, tile in enumerate(row):
+        if tile == floor:
+            for neighbor in get_orthog_neighbors(i_x, i_y):
+                if neighbor[0] < width and neighbor[1] < height and map[neighbor[1]][neighbor[0]] == impass:
+                    map[neighbor[1]][neighbor[0]] = wall
 
 for row in map:
     rowstring = ""

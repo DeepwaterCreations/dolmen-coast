@@ -2,16 +2,29 @@ import random
 import math
 import curses
 
+class Tile(object):
+    def __init__(self, char, color=None):
+        self.char = char
+        self.color = color
+
 class Map(object):
-    floor = '.'
-    wall = '#'
-    impass = '~'
+    floor = Tile('.')
+    wall = Tile('#')
+    impass = Tile('~')
+    def init_colors(self):
+        curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        Map.floor.color = curses.color_pair(3)
+        Map.wall.color = curses.color_pair(2)
+        Map.impass.color = curses.color_pair(1)
 
     def __init__(self, width, height):
         self.width = width
         self.height = height
 
         self._maparray = []
+        self.init_colors()
 
         for y in range(self.height):
             self._maparray.append([])
@@ -85,7 +98,7 @@ def main(stdscr):
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):
-            stdscr.addstr(x, y, tile)
+            stdscr.addstr(x, y, tile.char, tile.color)
 
     stdscr.refresh()
     stdscr.getkey()

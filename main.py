@@ -81,11 +81,11 @@ def main(stdscr):
     curses.curs_set(False)
     stdscr.clear()
 
-    map = Map(50, 50)
+    map = Map(curses.LINES, curses.COLS-1)
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):
-            stdscr.addstr(y, x, tile)
+            stdscr.addstr(x, y, tile)
 
     stdscr.refresh()
     stdscr.getkey()

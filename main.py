@@ -1,5 +1,6 @@
 import random
 import math
+import curses
 
 class Map(object):
     floor = '.'
@@ -42,12 +43,17 @@ class Map(object):
                         if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == Map.impass:
                             self.set(neighbor[0], neighbor[1], Map.wall)
 
-    def show_map(self):
+    def get_map_string(self):
+        mapstring = ""
         for row in self._maparray:
             rowstring = ""
             for tile in row:
                 rowstring += tile
-            print rowstring
+            mapstring += rowstring
+            mapstring += '\n'
+
+    def get_map_array(self):
+        return self._maparray
 
     def make_dolmen(self, x, y, r):
         for circ_height in range(-r, r+1):
@@ -71,7 +77,19 @@ def test_dolmens():
 def get_orthog_neighbors(x, y):
    return [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
 
-if __name__ == "__main__":
-    map = Map(50, 50)
-    map.show_map()
+def main(stdscr):
+    curses.curs_set(False)
+    stdscr.clear()
 
+    map = Map(50, 50)
+    maparray = map.get_map_array()
+    for y, row in enumerate(maparray):
+        for x, tile in enumerate(row):
+            stdscr.addstr(y, x, tile)
+
+    stdscr.refresh()
+    stdscr.getkey()
+
+
+if __name__ == "__main__":
+    curses.wrapper(main)

@@ -40,14 +40,14 @@ class Map(object):
         self._maparray[y][x] = tile
 
     def _create_map(self):
-        num_dolmens = 5
-        dolmen_radius = 6
-        for i in range(num_dolmens):
+        num_mesas = 5
+        mesa_radius = 6
+        for i in range(num_mesas):
             x = random.randint(0, self.width-1)
             y = random.randint(0, self.height-1)
-            r = random.randint(0, dolmen_radius)
-            self.make_dolmen(x, y, r)
-        # test_dolmens()
+            r = random.randint(0, mesa_radius)
+            self.make_mesa(x, y, r)
+        # test_mesas()
 
         for i_y, row in enumerate(self._maparray):
             for i_x, tile in enumerate(row):
@@ -68,7 +68,7 @@ class Map(object):
     def get_map_array(self):
         return self._maparray
 
-    def make_dolmen(self, x, y, r):
+    def make_mesa(self, x, y, r):
         for circ_height in range(-r, r+1):
             circ_width = int(get_circle_dimensions(r, circ_height))
             for circ_x in range(x-circ_width, x+circ_width+1):
@@ -80,11 +80,11 @@ def get_circle_dimensions(r, y):
     return math.sqrt(r**2 - y**2)
 
 
-def test_dolmens():
+def test_mesas():
     for r in range(0, 5):
         x = width/2
         y = r*(height/5) + 5
-        make_dolmen(x, y, r)
+        make_mesa(x, y, r)
         map.set(x, y, '@')
 
 def get_orthog_neighbors(x, y):

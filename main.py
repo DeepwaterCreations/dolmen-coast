@@ -1,3 +1,5 @@
+from __future__ import division
+
 import random
 import math
 import curses
@@ -23,6 +25,8 @@ class Map(object):
         self.width = width
         self.height = height
 
+        self.map_area = width * height
+
         self._maparray = []
         self.init_colors()
 
@@ -40,14 +44,20 @@ class Map(object):
         self._maparray[y][x] = tile
 
     def _create_map(self):
-        num_mesas = 5
-        mesa_radius = 6
-        for i in range(num_mesas):
+        # num_mesas = 5
+        mesa_max_radius = 6
+        mesa_map_density = .02
+        # for i in range(num_mesas):
+        total_mesa_area = 0
+        #Slop: Mesas can overlap or fall off the edge of the map.
+        #We might also have a large mesa that increases mesa density past the cutoff.
+        while (total_mesa_area/self.map_area) < mesa_map_density:
             x = random.randint(0, self.width-1)
             y = random.randint(0, self.height-1)
-            r = random.randint(0, mesa_radius)
+            r = random.randint(0, mesa_max_radius)
             self.make_mesa(x, y, r)
-        # test_mesas()
+            mesa_area = r**2
+            total_mesa_area += mesa_area
 
         for i_y, row in enumerate(self._maparray):
             for i_x, tile in enumerate(row):

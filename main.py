@@ -9,6 +9,9 @@ class Tile(object):
         self.char = char
         self.color = color
 
+    def __str__(self):
+        return self.char
+
 class Mesa(object):
 
     def __init__(self, x, y, r):

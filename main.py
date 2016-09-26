@@ -27,13 +27,8 @@ class Map(object):
 
         self.map_area = width * height
 
-        self._maparray = []
+        self._maparray = [[Map.impass for i in range(self.width)]for j in range(self.height)]
         self.init_colors()
-
-        for y in range(self.height):
-            self._maparray.append([])
-            for x in range(self.width):
-                self._maparray[y].append(Map.impass)
 
         self._create_map()
 

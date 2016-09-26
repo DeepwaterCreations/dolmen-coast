@@ -9,10 +9,43 @@ class Tile(object):
         self.char = char
         self.color = color
 
+class Mesa(object):
+
+    def __init__(self, x, y, r):
+        #x,y are the origin-tile in the upper-left corner.
+        self.x = x
+        self.y = y
+        self.center_x = self.x + r
+        self.center_y = self.y + r
+
+        self.r = r
+        self.width = 2*r+1
+        self.height = 2*r+1
+        self._patch = [[None for i in range(self.width)]for j in range(self.height)]
+
+        #Create the mesa
+        for circ_height in range(-self.r, self.r+1):
+            circ_width = int(self._get_width_from_height(circ_height))
+            for circ_x in range(-circ_width, circ_width+1):
+                if circ_height < self.height and circ_x < self.width:
+                    self._patch[circ_x][circ_height] = Map.floor
+
+    def get(self, x, y):
+        return self._patch[y][x]
+
+    def set(self, x, y, tile):
+        self._patch[y][x] = tile
+         
+    def _get_width_from_height(self, y_offset):
+        """Returns how many tiles across the circle is
+        at a given vertical offset from its center
+        """
+        return math.sqrt(self.r**2 - y_offset**2)
+
 class Map(object):
+    impass = Tile('~')
     floor = Tile('.')
     wall = Tile('#')
-    impass = Tile('~')
     def init_colors(self):
         curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
@@ -22,15 +55,17 @@ class Map(object):
         Map.impass.color = curses.color_pair(1)
 
     def __init__(self, width, height):
+        self.init_colors()
+
         self.width = width
         self.height = height
-
         self.map_area = width * height
 
         self._maparray = [[Map.impass for i in range(self.width)]for j in range(self.height)]
-        self.init_colors()
-
+        self._mesas = []
         self._create_map()
+
+
 
     def get(self, x, y):
         return self._maparray[y][x]
@@ -47,13 +82,14 @@ class Map(object):
         #Slop: Mesas can overlap or fall off the edge of the map.
         #We might also have a large mesa that increases mesa density past the cutoff.
         while (total_mesa_area/self.map_area) < mesa_map_density:
-            x = random.randint(0, self.width-1)
-            y = random.randint(0, self.height-1)
             r = random.randint(0, mesa_max_radius)
+            x = random.randint(0, self.width-(2*r + 1))
+            y = random.randint(0, self.height-r)
             self.make_mesa(x, y, r)
             mesa_area = r**2
             total_mesa_area += mesa_area
 
+        #Add walls around the mesas
         for i_y, row in enumerate(self._maparray):
             for i_x, tile in enumerate(row):
                 if tile == Map.floor:
@@ -74,15 +110,18 @@ class Map(object):
         return self._maparray
 
     def make_mesa(self, x, y, r):
-        for circ_height in range(-r, r+1):
-            circ_width = int(get_circle_dimensions(r, circ_height))
-            for circ_x in range(x-circ_width, x+circ_width+1):
-                if y+circ_height < self.height and circ_x < self.width:
-                    self.set(circ_x, y+circ_height, Map.floor)
+        new_mesa = Mesa(x, y, r)
+        self._mesas.append(new_mesa)
+        self.apply_patch(new_mesa)
 
+    def apply_patch(self, patchsource):
+        patch = patchsource._patch
+        for i_y, row in enumerate(patch):
+            for i_x, tile in enumerate(row):
+                if tile != None:
+                    self.set(i_x + patchsource.x, i_y + patchsource.y, tile)
+        
 
-def get_circle_dimensions(r, y):
-    return math.sqrt(r**2 - y**2)
 
 
 def test_mesas():

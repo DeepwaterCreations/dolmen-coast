@@ -56,8 +56,6 @@ class Map(object):
         Map.test_tile.color = curses.color_pair(1)
 
     def __init__(self, width, height):
-        self.init_colors()
-
         self.width = width
         self.height = height
         self.map_area = width * height
@@ -138,6 +136,7 @@ def main(stdscr):
     stdscr.clear()
 
     map = Map(curses.LINES, curses.COLS-1)
+    map.init_colors()
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):

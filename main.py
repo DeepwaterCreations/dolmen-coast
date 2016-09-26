@@ -41,6 +41,19 @@ class Mesa(object):
         """
         return math.sqrt(self.r**2 - y_offset**2)
 
+    def __str__(self):
+        patchstring = ""
+        for row in self._patch:
+            rowstring = ""
+            for tile in row:
+                if tile != None:
+                    rowstring += tile.char
+                else:
+                    rowstring += ' '
+            patchstring += rowstring
+            patchstring += '\n'
+        return patchstring
+
 class Map(object):
     impass = Tile('~')
     floor = Tile('.')
@@ -103,15 +116,6 @@ class Map(object):
             self.make_mesa(x-r, y-r, r)
             self.set(x, y, Map.test_tile)
 
-    def get_map_string(self):
-        mapstring = ""
-        for row in self._maparray:
-            rowstring = ""
-            for tile in row:
-                rowstring += tile
-            mapstring += rowstring
-            mapstring += '\n'
-
     def get_map_array(self):
         return self._maparray
 
@@ -126,6 +130,17 @@ class Map(object):
             for i_x, tile in enumerate(row):
                 if tile != None:
                     self.set(i_x + patchsource.x, i_y + patchsource.y, tile)
+
+    def __str__(self):
+        mapstring = ""
+        for row in self._maparray:
+            rowstring = ""
+            for tile in row:
+                rowstring += tile.char
+            mapstring += rowstring
+            mapstring += '\n'
+        return mapstring
+
         
 
 def get_orthog_neighbors(x, y):

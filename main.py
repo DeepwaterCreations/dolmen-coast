@@ -5,6 +5,7 @@ import math
 import curses
 
 class Tile(object):
+    """Represents a tile on the map."""
     def __init__(self, char, color=None):
         self.char = char
         self.color = color
@@ -21,6 +22,7 @@ class TileManager(object):
         self.init_colors()
 
     def init_colors(self):
+        """Initializes curses colors and applies them to tiles"""
         curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
         curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
@@ -118,6 +120,7 @@ class Map(object):
                         if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
                             self.set(neighbor[0], neighbor[1], TileManager.wall)
     def test_mesas(self):
+        """Generates 5 mesas in a column, descending in size."""
         for r in range(0, 5):
             x = self.width//2
             y = r*(self.height//5) + 5
@@ -128,11 +131,13 @@ class Map(object):
         return self._maparray
 
     def make_mesa(self, x, y, r):
+        """Generates a new mesa with radius r and adds it to the map with its top-left corner at x,y"""
         new_mesa = Mesa(x, y, r)
         self._mesas.append(new_mesa)
         self.apply_patch(new_mesa)
 
     def apply_patch(self, patchsource):
+        """Adds a set of tiles to the map from an object that has a patch and a set of x,y coordinates"""
         patch = patchsource._patch
         for i_y, row in enumerate(patch):
             for i_x, tile in enumerate(row):
@@ -152,7 +157,10 @@ class Map(object):
         
 
 def get_orthog_neighbors(x, y):
-   return [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+    """For the given x,y coordinates, returns a list of tuples
+    containing adjacent coordinates to the left, right, up and down
+    """
+    return [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
 
 def main(stdscr):
     curses.curs_set(False)

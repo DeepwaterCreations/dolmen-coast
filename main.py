@@ -106,7 +106,7 @@ class Map(object):
         while (total_mesa_area/self.map_area) < mesa_map_density:
             r = random.randint(0, mesa_max_radius)
             x = random.randint(0, self.width-(2*r + 1))
-            y = random.randint(0, self.height-r)
+            y = random.randint(0, self.height-(2*r + 1))
             self.make_mesa(x, y, r)
             mesa_area = r**2
             total_mesa_area += mesa_area

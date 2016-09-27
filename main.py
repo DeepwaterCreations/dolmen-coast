@@ -11,6 +11,23 @@ class Tile(object):
 
     def __str__(self):
         return self.char
+class TileManager(object):
+    impass = Tile('~')
+    floor = Tile('.')
+    wall = Tile('#')
+    test_tile = Tile('@')
+
+    def __init__(self):
+        self.init_colors()
+
+    def init_colors(self):
+        curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        TileManager.floor.color = curses.color_pair(3)
+        TileManager.wall.color = curses.color_pair(2)
+        TileManager.impass.color = curses.color_pair(1)
+        TileManager.test_tile.color = curses.color_pair(1)
 
 class Mesa(object):
 
@@ -30,7 +47,7 @@ class Mesa(object):
         for circ_height in range(-self.r, self.r+1):
             rib_width = int(self._get_ribwidth_from_height(circ_height))
             for circ_x in range(-rib_width, rib_width+1):
-                self._patch[circ_height+r][circ_x+r] = Map.floor
+                self._patch[circ_height+r][circ_x+r] = TileManager.floor
 
     def get(self, x, y):
         return self._patch[y][x]
@@ -58,25 +75,13 @@ class Mesa(object):
         return patchstring
 
 class Map(object):
-    impass = Tile('~')
-    floor = Tile('.')
-    wall = Tile('#')
-    test_tile = Tile('@')
-    def init_colors(self):
-        curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        Map.floor.color = curses.color_pair(3)
-        Map.wall.color = curses.color_pair(2)
-        Map.impass.color = curses.color_pair(1)
-        Map.test_tile.color = curses.color_pair(1)
 
     def __init__(self, width, height):
         self.width = width
         self.height = height
         self.map_area = width * height
 
-        self._maparray = [[Map.impass for i in range(self.width)]for j in range(self.height)]
+        self._maparray = [[TileManager.impass for i in range(self.width)]for j in range(self.height)]
         self._mesas = []
         self._create_map()
 
@@ -108,16 +113,16 @@ class Map(object):
         #Add walls around the mesas
         for i_y, row in enumerate(self._maparray):
             for i_x, tile in enumerate(row):
-                if tile == Map.floor:
+                if tile == TileManager.floor:
                     for neighbor in get_orthog_neighbors(i_x, i_y):
-                        if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == Map.impass:
-                            self.set(neighbor[0], neighbor[1], Map.wall)
+                        if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
+                            self.set(neighbor[0], neighbor[1], TileManager.wall)
     def test_mesas(self):
         for r in range(0, 5):
             x = self.width//2
             y = r*(self.height//5) + 5
             self.make_mesa(x-r, y-r, r)
-            self.set(x, y, Map.test_tile)
+            self.set(x, y, TileManager.test_tile)
 
     def get_map_array(self):
         return self._maparray
@@ -151,10 +156,10 @@ def get_orthog_neighbors(x, y):
 
 def main(stdscr):
     curses.curs_set(False)
+    tile_m = TileManager()
     stdscr.clear()
 
     map = Map(curses.LINES, curses.COLS-1)
-    map.init_colors()
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):

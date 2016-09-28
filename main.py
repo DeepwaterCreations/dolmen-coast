@@ -119,6 +119,25 @@ class Map(object):
                     for neighbor in get_orthog_neighbors(i_x, i_y):
                         if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
                             self.set(neighbor[0], neighbor[1], TileManager.wall)
+
+    def _check_overlap(self, box1, box2):
+        """Returns a tuple containing whether the boxes have horizontal and vertical overlap.
+        They have overlap if you can draw a staight, orthogonal line from one to the other and touch a point
+        on each.
+        """
+        h_overlap = False
+        v_overlap = False
+        box1_bottom = box1.y + box1.height
+        box2_bottom = box2.y + box2.height
+        box1_right = box1.x + box1.width
+        box2_right = box2.x + box2.width
+        h_overlap = (box1.y < box2.y < box1_bottom or 
+                    box2.y < box1.y < box2_bottom)
+        v_overlap = (box1.x < box2.x < box1_right or 
+                    box2.x < box1.x < box2_right)
+        return (h_overlap, v_overlap)
+
+
     def test_mesas(self):
         """Generates 5 mesas in a column, descending in size."""
         for r in range(0, 5):

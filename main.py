@@ -123,7 +123,8 @@ class Map(object):
     def _check_overlap(self, box1, box2):
         """Returns a tuple containing whether the boxes have horizontal and vertical overlap.
         They have overlap if you can draw a staight, orthogonal line from one to the other and touch a point
-        on each.
+        on each. Horizontal overlap means they are horizontally colinear, vertical overlap means they are 
+        vertically colinear.
         """
         h_overlap = False
         v_overlap = False

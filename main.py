@@ -138,6 +138,11 @@ class Map(object):
                     box2.x < box1.x < box2_right)
         return (h_overlap, v_overlap)
 
+    def _check_collision(self, box1, box2):
+        """Returns true if boxes share the same space"""
+        h_overlap, v_overlap = self._check_overlap(box1, box2)
+        return h_overlap and v_overlap
+
 
     def test_mesas(self):
         """Generates 5 mesas in a column, descending in size."""

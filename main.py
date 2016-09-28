@@ -47,7 +47,7 @@ class Mesa(object):
 
         #Create the mesa, treating the center tile as the origin.
         for circ_height in range(-self.r, self.r+1):
-            rib_width = int(self._get_ribwidth_from_height(circ_height))
+            rib_width = int(self.get_ribwidth(circ_height))
             for circ_x in range(-rib_width, rib_width+1):
                 self._patch[circ_height+r][circ_x+r] = TileManager.floor
 
@@ -57,11 +57,11 @@ class Mesa(object):
     def set(self, x, y, tile):
         self._patch[y][x] = tile
          
-    def _get_ribwidth_from_height(self, y_offset):
-        """Returns the horizontal distance from a vertical line through the center to the 
-        edge of the circle at a given vertical offset from its center
+    def get_ribwidth(self, offset):
+        """Returns the perpendicular distance to the edge of the circle from a line
+        through the center of the circle at a given offset.
         """
-        return math.sqrt(self.r**2 - y_offset**2)
+        return math.sqrt(self.r**2 - offset**2)
 
     def __str__(self):
         patchstring = ""

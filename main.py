@@ -4,6 +4,10 @@ import random
 import math
 import curses
 
+import dbgoutput
+
+dbgobj = None
+
 class Tile(object):
     """Represents a tile on the map."""
     def __init__(self, char, color=None):
@@ -23,13 +27,14 @@ class TileManager(object):
 
     def init_colors(self):
         """Initializes curses colors and applies them to tiles"""
-        curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        TileManager.floor.color = curses.color_pair(3)
-        TileManager.wall.color = curses.color_pair(2)
-        TileManager.impass.color = curses.color_pair(1)
-        TileManager.test_tile.color = curses.color_pair(1)
+        #1 is currently reserved for error messages
+        curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        TileManager.floor.color = curses.color_pair(4)
+        TileManager.wall.color = curses.color_pair(3)
+        TileManager.impass.color = curses.color_pair(2)
+        TileManager.test_tile.color = curses.color_pair(2)
 
 class Mesa(object):
 
@@ -189,6 +194,7 @@ def get_orthog_neighbors(x, y):
 
 def main(stdscr):
     curses.curs_set(False)
+    dbgobj = dbgoutput.DebugOutput(stdscr)
     tile_m = TileManager()
     stdscr.clear()
 
@@ -197,6 +203,8 @@ def main(stdscr):
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):
             stdscr.addstr(x, y, tile.char, tile.color)
+
+    dbgobj.print_output(stdscr)
 
     stdscr.refresh()
     stdscr.getkey()

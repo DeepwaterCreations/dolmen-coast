@@ -79,14 +79,35 @@ class Mesa(object):
             patchstring += '\n'
         return patchstring
 
+class Bridge(object):
+
+    def __init__(self, x, y, length, direction):
+        self.x = x
+        self.y = y
+
+        self.length = length
+
+        self._patch = [[]]
+        self.width = 0
+        self.height = 0
+        self._build_bridge(direction)
+
+    def _build_bridge(self, direction):
+        self.width = min(abs(self.length * direction[0]), 1)
+        self.height = min(abs(self.length * direction[1]), 1)
+        self._patch = [[None for i in range(self.width)]for j in range(self.height)]
+        for patch_x, patch_y in range(length):
+            patch[patch_y * direction[1]][patch_x * direction[0]] = TileManager.bridge
+
+
 class Map(object):
 
     def __init__(self, width, height):
-        self.width = width
         self.height = height
-        self.map_area = width * height
+        self.width = width
+        self.map_area = height * width
 
-        self._maparray = [[TileManager.impass for i in range(self.width)]for j in range(self.height)]
+        self._maparray = [[TileManager.impass for i in range(self.height)]for j in range(self.width)]
         self._mesas = []
         self._create_map()
 
@@ -108,8 +129,8 @@ class Map(object):
         #We might also have a large mesa that increases mesa density past the cutoff.
         while (total_mesa_area/self.map_area) < mesa_map_density:
             r = random.randint(0, mesa_max_radius)
-            x = random.randint(0, self.width-(2*r + 1))
-            y = random.randint(0, self.height-(2*r + 1))
+            x = random.randint(0, self.height-(2*r + 1))
+            y = random.randint(0, self.width-(2*r + 1))
             self.make_mesa(x, y, r)
             mesa_area = r**2
             total_mesa_area += mesa_area
@@ -120,7 +141,7 @@ class Map(object):
             for i_x, tile in enumerate(row):
                 if tile == TileManager.floor:
                     for neighbor in get_orthog_neighbors(i_x, i_y):
-                        if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
+                        if neighbor[0] < self.height and neighbor[1] < self.width and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
                             self.set(neighbor[0], neighbor[1], TileManager.wall)
 
     def _check_overlap(self, box1, box2):
@@ -150,8 +171,8 @@ class Map(object):
     def test_mesas(self):
         """Generates 5 mesas in a column, descending in size."""
         for r in range(0, 5):
-            x = self.width//2
-            y = r*(self.height//5) + 5
+            x = self.height//2
+            y = r*(self.width//5) + 5
             self.make_mesa(x-r, y-r, r)
             self.set(x, y, TileManager.test_tile)
 
@@ -197,7 +218,7 @@ def main(stdscr):
     tile_m = TileManager()
     stdscr.clear()
 
-    map = Map(curses.LINES, curses.COLS-1)
+    map = Map(curses.COLS-1, curses.LINES)
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):

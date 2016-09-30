@@ -1,2 +1,2 @@
 # dolmen-coast
-A simple Python script to generate circles on an ASCII grid
+An increasingly  not-so-simple Python script to procedurally generate circles on an ASCII grid

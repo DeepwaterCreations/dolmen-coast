@@ -17,7 +17,8 @@ class Tile(object):
 class TileManager(object):
     impass = Tile('~')
     floor = Tile('.')
-    wall = Tile('#')
+    wall = Tile('*')
+    bridge = Tile('#')
     test_tile = Tile('@')
 
     def __init__(self):

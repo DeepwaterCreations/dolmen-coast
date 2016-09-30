@@ -6,8 +6,6 @@ import curses
 
 import dbgoutput
 
-dbgobj = None
-
 class Tile(object):
     """Represents a tile on the map."""
     def __init__(self, char, color=None):
@@ -192,9 +190,10 @@ def get_orthog_neighbors(x, y):
     """
     return [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
 
+
 def main(stdscr):
     curses.curs_set(False)
-    dbgobj = dbgoutput.DebugOutput(stdscr)
+    dbgoutput.init(stdscr)
     tile_m = TileManager()
     stdscr.clear()
 
@@ -204,7 +203,7 @@ def main(stdscr):
         for x, tile in enumerate(row):
             stdscr.addstr(x, y, tile.char, tile.color)
 
-    dbgobj.print_output(stdscr)
+    dbgoutput.print_output()
 
     stdscr.refresh()
     stdscr.getkey()

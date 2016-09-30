@@ -52,7 +52,7 @@ class Mesa(object):
         for circ_height in range(-self.r, self.r+1):
             rib_width = int(self.get_ribwidth(circ_height))
             for circ_x in range(-rib_width, rib_width+1):
-                self._patch[circ_height+r][circ_x+r] = TileManager.floor
+                self.set(circ_x+r, circ_height+r, TileManager.floor)
 
     def get(self, x, y):
         return self._patch[y][x]

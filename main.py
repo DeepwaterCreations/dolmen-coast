@@ -65,7 +65,7 @@ class Mesa(object):
         """Returns the perpendicular distance to the edge of the circle from a line
         through the center of the circle at a given offset.
         """
-        return math.sqrt(self.r**2 - offset**2)
+        return int(math.sqrt(abs(self.r**2 - offset**2)))
 
     def __str__(self):
         patchstring = ""

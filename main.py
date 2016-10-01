@@ -142,7 +142,7 @@ class Map(object):
             for i_x, tile in enumerate(row):
                 if tile == TileManager.floor:
                     for neighbor in get_orthog_neighbors(i_x, i_y):
-                        if neighbor[0] < self.height and neighbor[1] < self.width and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
+                        if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
                             self.set(neighbor[0], neighbor[1], TileManager.wall)
 
     def _check_overlap(self, box1, box2):

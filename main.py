@@ -108,7 +108,7 @@ class Map(object):
         self.width = width
         self.map_area = height * width
 
-        self._maparray = [[TileManager.impass for i in range(self.height)]for j in range(self.width)]
+        self._maparray = [[TileManager.impass for i in range(self.width)]for j in range(self.height)]
         self._mesas = []
         self._create_map()
 
@@ -219,11 +219,11 @@ def main(stdscr):
     tile_m = TileManager()
     stdscr.clear()
 
-    map = Map(curses.COLS-1, curses.LINES)
+    map = Map(curses.COLS, curses.LINES-1)
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):
-            stdscr.addstr(x, y, tile.char, tile.color)
+            stdscr.addstr(y, x, tile.char, tile.color)
 
     dbgoutput.print_output()
 

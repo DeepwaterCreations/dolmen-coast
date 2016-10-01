@@ -172,8 +172,8 @@ class Map(object):
     def test_mesas(self):
         """Generates 5 mesas in a column, descending in size."""
         for r in range(0, 5):
-            x = self.height//2
-            y = r*(self.width//5) + 5
+            y = self.height//2
+            x = r*(self.width//5) + 5
             self.make_mesa(x-r, y-r, r)
             self.set(x, y, TileManager.test_tile)
 

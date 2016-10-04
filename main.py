@@ -286,7 +286,10 @@ def main(stdscr):
     maparray = map.get_map_array()
     for y, row in enumerate(maparray):
         for x, tile in enumerate(row):
-            stdscr.addstr(y, x, tile.char, tile.color)
+            try:
+                stdscr.addstr(y, x, tile.char, tile.color)
+            except TypeError:
+                raise TypeError("X:{0} Y:{1} char:{2} color:{3}".format(x, y, tile.char, tile.color))
 
     dbgoutput.print_output()
 

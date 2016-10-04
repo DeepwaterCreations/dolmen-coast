@@ -193,11 +193,10 @@ class Map(object):
             max_y = min(mesa.y + mesa.height, mesa2.y + mesa2.height)
             min_y = max(mesa.y, mesa2.y)
             y = random.randint(min_y, max_y-1)
-            dbgoutput.add_string("Y:{0}".format(y))
-        elif dir in ['N', 'W']:
+        elif dir in ['N', 'S']:
             max_x = min(mesa.x + mesa.width, mesa2.x + mesa2.width)
             min_x = max(mesa.x, mesa2.x)
-            x = random.randint(min_x, max_x)
+            x = random.randint(min_x, max_x-1)
         if x == None:
             circ_bridge_y = y - mesa.center_y
             x_offset = mesa.get_ribwidth(circ_bridge_y) + 1

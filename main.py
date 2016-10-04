@@ -186,6 +186,31 @@ class Map(object):
         self._mesas.append(new_mesa)
         self.apply_patch(new_mesa)
 
+    def make_bridge(self, mesa, mesa2, dir):
+        y = None
+        x = None
+        if dir in ['E', 'W']:
+            max_y = min(mesa.y + mesa.height, mesa2.y + mesa2.height)
+            min_y = max(mesa.y, mesa2.y)
+            y = random.randint(min_y, max_y-1)
+            dbgoutput.add_string("Y:{0}".format(y))
+        elif dir in ['N', 'W']:
+            max_x = min(mesa.x + mesa.width, mesa2.x + mesa2.width)
+            min_x = max(mesa.x, mesa2.x)
+            x = random.randint(min_x, max_x)
+        if x == None:
+            circ_bridge_y = y - mesa.center_y
+            x_offset = mesa.get_ribwidth(circ_bridge_y) + 1
+            if dir == 'W':
+                x_offset *= -1
+            x = mesa.center_x + x_offset
+        if y == None:
+            circ_bridge_x = x - mesa.center_x
+            y_offset = mesa.get_ribwidth(circ_bridge_x) + 1
+            if dir == 'N':
+                y_offset *= -1
+            y = mesa.center_y + y_offset
+
     def apply_patch(self, patchsource):
         """Adds a set of tiles to the map from an object that has a patch and a set of x,y coordinates"""
         patch = patchsource._patch

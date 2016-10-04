@@ -102,6 +102,18 @@ class Bridge(object):
         self.y = min(self.y, self.y + (self.length * direction[1]) + 1)
         self._patch = [[TileManager.bridge for i in range(self.width)]for j in range(self.height)]
 
+    def __str__(self):
+        patchstring = ""
+        for row in self._patch:
+            rowstring = ""
+            for tile in row:
+                if tile != None:
+                    rowstring += tile.char
+                else:
+                    rowstring += ' '
+            patchstring += rowstring
+            patchstring += '\n'
+        return patchstring
 
 
 class Map(object):

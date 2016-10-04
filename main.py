@@ -161,6 +161,40 @@ class Map(object):
                         if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
                             self.set(neighbor[0], neighbor[1], TileManager.wall)
 
+        #Build bridges between mesas
+        #For each pair of mesas, get the set of unchecked mesas that are colinear.
+        #Trim this list to the closest neighbor in each direction.
+        #Then, for each neighbor, probabilistically build a bridge or don't.
+        for checked_idx, mesa in enumerate(self._mesas):
+            closest_mesas = {'N':None, 'E':None, 'S':None, 'W':None}
+            for mesa2 in self._mesas[checked_idx+1:]:
+                h_overlap, v_overlap =  self._check_overlap(mesa, mesa2)
+                if self._check_collision(mesa, mesa2):
+                    continue
+                if h_overlap:
+                    relative = mesa2.x - mesa.x
+                    dir = 'E' if relative > 0 else 'W'
+                    distance = abs(relative)
+                    if closest_mesas[dir] != None:
+                        prev_distance = abs(closest_mesas[dir].x - mesa.x)
+                        if distance < prev_distance:
+                            closest_mesas[dir] = mesa2
+                    else:
+                        closest_mesas[dir] = mesa2
+                if v_overlap:
+                    relative = mesa2.y - mesa.y
+                    dir = 'N' if relative > 0 else 'S'
+                    distance = abs(relative)
+                    if closest_mesas[dir] != None:
+                        prev_distance = abs(closest_mesas[dir].y - mesa.y)
+                        if distance < prev_distance:
+                            closest_mesas[dir] = mesa2
+                    else:
+                        closest_mesas[dir] = mesa2
+            for dir in ['N', 'E', 'S', 'W']:
+                if closest_mesas[dir] != None and random.randint(0, 3) == 0:
+                    self.make_bridge(mesa, closest_mesas[dir], dir)
+
     def _check_overlap(self, box1, box2):
         """Returns a tuple containing whether the boxes have horizontal and vertical overlap.
         They have overlap if you can draw a staight, orthogonal line from one to the other and touch a point

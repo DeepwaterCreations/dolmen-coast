@@ -30,10 +30,12 @@ class TileManager(object):
         curses.init_pair(2, curses.COLOR_BLUE, curses.COLOR_BLACK)
         curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        TileManager.floor.color = curses.color_pair(4)
-        TileManager.wall.color = curses.color_pair(3)
-        TileManager.impass.color = curses.color_pair(2)
+        curses.init_pair(5, curses.COLOR_RED, curses.COLOR_BLACK)
         TileManager.test_tile.color = curses.color_pair(2)
+        TileManager.impass.color = curses.color_pair(2)
+        TileManager.wall.color = curses.color_pair(3)
+        TileManager.floor.color = curses.color_pair(4)
+        TileManager.bridge.color = curses.color_pair(5)
 
 class Mesa(object):
 
@@ -94,11 +96,12 @@ class Bridge(object):
         self._build_bridge(direction)
 
     def _build_bridge(self, direction):
-        self.width = min(abs(self.length * direction[0]), 1)
-        self.height = min(abs(self.length * direction[1]), 1)
-        self._patch = [[None for i in range(self.width)]for j in range(self.height)]
-        for patch_x, patch_y in range(length):
-            patch[patch_y * direction[1]][patch_x * direction[0]] = TileManager.bridge
+        self.width = max(abs(self.length * direction[0]), 1)
+        self.height = max(abs(self.length * direction[1]), 1)
+        self.x = min(self.x, self.x + (self.length * direction[0]) + 1)
+        self.y = min(self.y, self.y + (self.length * direction[1]) + 1)
+        self._patch = [[TileManager.bridge for i in range(self.width)]for j in range(self.height)]
+
 
 
 class Map(object):
@@ -110,6 +113,7 @@ class Map(object):
 
         self._maparray = [[TileManager.impass for i in range(self.width)]for j in range(self.height)]
         self._mesas = []
+        self._bridges = []
         self._create_map()
 
 
@@ -189,6 +193,7 @@ class Map(object):
     def make_bridge(self, mesa, mesa2, dir):
         y = None
         x = None
+        length = None
         if dir in ['E', 'W']:
             max_y = min(mesa.y + mesa.height, mesa2.y + mesa2.height)
             min_y = max(mesa.y, mesa2.y)
@@ -198,17 +203,39 @@ class Map(object):
             min_x = max(mesa.x, mesa2.x)
             x = random.randint(min_x, max_x-1)
         if x == None:
-            circ_bridge_y = y - mesa.center_y
-            x_offset = mesa.get_ribwidth(circ_bridge_y) + 1
-            if dir == 'W':
-                x_offset *= -1
-            x = mesa.center_x + x_offset
+            #Bridge is horizontal
+            x = self._get_bridge_coordinate(y, mesa.center_y, mesa.center_x, mesa.get_ribwidth, invert=(dir=='W'))
+            other_x = self._get_bridge_coordinate(y, mesa2.center_y, mesa2.center_x, mesa2.get_ribwidth, invert=(dir=='E'))
+            length = abs(x - other_x) + 1
         if y == None:
-            circ_bridge_x = x - mesa.center_x
-            y_offset = mesa.get_ribwidth(circ_bridge_x) + 1
-            if dir == 'N':
-                y_offset *= -1
-            y = mesa.center_y + y_offset
+            #Bridge is vertical
+            y = self._get_bridge_coordinate(x, mesa.center_x, mesa.center_y, mesa.get_ribwidth, invert=(dir=='N'))
+            other_y = self._get_bridge_coordinate(x, mesa2.center_x, mesa2.center_y, mesa2.get_ribwidth, invert=(dir=='S'))
+            length = abs(y - other_y) + 1
+
+        directions = {'N': (0,-1),
+                    'E': (1,0),
+                    'S': (0,1),
+                    'W': (-1,0)}
+        new_bridge = Bridge(x, y, length, directions[dir])
+        self._bridges.append(new_bridge)
+        self.apply_patch(new_bridge)
+
+    def _get_bridge_coordinate(self, b, center_b, center_c, ribwidth_func, invert=False):
+        """b is an x or y coordinate
+            center_b is the center x or y coordinate of the mesa
+            center_b is the coordinate along the perpendicular axis
+            ribwidth_func is the mesa's get_ribwidth
+            invert = true if the bridge is pointing in the negative direction
+            Returns a global coordinate of a point on the edge of a mesa
+            along an axis perpendicular to b.
+            """
+        circ_bridge_coord = b - center_b
+        c_offset = ribwidth_func(circ_bridge_coord) + 1
+        if invert:
+            c_offset *= -1
+        return center_c + c_offset
+
 
     def apply_patch(self, patchsource):
         """Adds a set of tiles to the map from an object that has a patch and a set of x,y coordinates"""

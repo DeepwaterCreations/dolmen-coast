@@ -4,10 +4,41 @@ import math
 
 from tilemanager import TileManager
 
-class Mesa(object):
+class Patch(object):
+    """A grid of tiles that can be added onto the map."""
+
+    def __init__(self, x, y, height, width):
+        #x,y are the origin-tile in the upper-left corner.
+        self.x = x
+        self.y = y
+        self.height = height
+        self.width = width
+        self._patch = [[None for i in range(self.width)]for j in range(self.height)]
+
+    def get(self, x, y):
+        return self._patch[y][x]
+
+    def set(self, x, y, tile):
+        self._patch[y][x] = tile
+         
+    def __str__(self):
+        patchstring = ""
+        for row in self._patch:
+            rowstring = ""
+            for tile in row:
+                if tile != None:
+                    rowstring += tile.char
+                else:
+                    rowstring += ' '
+            patchstring += rowstring
+            patchstring += '\n'
+        return patchstring
+
+
+class Mesa(Patch):
+    """A circular island"""
 
     def __init__(self, x, y, r):
-        #x,y are the origin-tile in the upper-left corner.
         self.x = x
         self.y = y
         self.center_x = self.x + r
@@ -24,33 +55,16 @@ class Mesa(object):
             for circ_x in range(-rib_width, rib_width+1):
                 self.set(circ_x+r, circ_height+r, TileManager.floor)
 
-    def get(self, x, y):
-        return self._patch[y][x]
-
-    def set(self, x, y, tile):
-        self._patch[y][x] = tile
-         
     def get_ribwidth(self, offset):
         """Returns the perpendicular distance to the edge of the circle from a line
         through the center of the circle at a given offset.
         """
         return int(math.sqrt(abs(self.r**2 - offset**2)))
 
-    def __str__(self):
-        patchstring = ""
-        for row in self._patch:
-            rowstring = ""
-            for tile in row:
-                if tile != None:
-                    rowstring += tile.char
-                else:
-                    rowstring += ' '
-            patchstring += rowstring
-            patchstring += '\n'
-        return patchstring
 
 
-class Bridge(object):
+class Bridge(Patch):
+    """A straight row of walkable tiles; a rickety wooden bridge over the sea"""
 
     def __init__(self, x, y, length, direction):
         self.x = x
@@ -69,16 +83,3 @@ class Bridge(object):
         self.x = min(self.x, self.x + (self.length * direction[0]) + 1)
         self.y = min(self.y, self.y + (self.length * direction[1]) + 1)
         self._patch = [[TileManager.bridge for i in range(self.width)]for j in range(self.height)]
-
-    def __str__(self):
-        patchstring = ""
-        for row in self._patch:
-            rowstring = ""
-            for tile in row:
-                if tile != None:
-                    rowstring += tile.char
-                else:
-                    rowstring += ' '
-            patchstring += rowstring
-            patchstring += '\n'
-        return patchstring

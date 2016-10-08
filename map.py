@@ -23,7 +23,10 @@ class Map(object):
         return self._maparray[y][x]
 
     def set(self, x, y, tile):
-        self._maparray[y][x] = tile
+        try:
+            self._maparray[y][x] = tile
+        except IndexError as e:
+            raise IndexError(e.args[0] + " X:{0} Y:{1} Width:{2} Height:{3}".format(x, y, self.width, self.height))
 
     def _create_map(self):
         # num_mesas = 5

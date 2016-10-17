@@ -18,7 +18,6 @@ class Map(object):
         self._bridges = []
         self._create_map()
 
-
     def get(self, x, y):
         return self._maparray[y][x]
 
@@ -45,13 +44,7 @@ class Map(object):
             total_mesa_area += mesa_area
         # self.test_mesas()
 
-        #Add walls around the mesas
-        for i_y, row in enumerate(self._maparray):
-            for i_x, tile in enumerate(row):
-                if tile == TileManager.floor:
-                    for neighbor in get_orthog_neighbors(i_x, i_y):
-                        if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
-                            self.set(neighbor[0], neighbor[1], TileManager.wall)
+        self._build_mesa_walls()
 
         #Build bridges between mesas
         #For each pair of mesas, get the set of unchecked mesas that are colinear.
@@ -86,6 +79,18 @@ class Map(object):
             for dir in ['N', 'E', 'S', 'W']:
                 if closest_mesas[dir] != None and random.randint(0, 3) == 0:
                     self.make_bridge(mesa, closest_mesas[dir], dir)
+
+    def _build_mesa_walls(self):
+        """For each floor tile on the map, turn all orthogonal neighbors that are impass
+        tiles into wall tiles.
+        """
+        for i_y, row in enumerate(self._maparray):
+            for i_x, tile in enumerate(row):
+                if tile == TileManager.floor:
+                    for neighbor in get_orthog_neighbors(i_x, i_y):
+                        if neighbor[0] < self.width and neighbor[1] < self.height and self.get(neighbor[0], neighbor[1]) == TileManager.impass:
+                            self.set(neighbor[0], neighbor[1], TileManager.wall)
+
 
     def _check_overlap(self, box1, box2):
         """Returns a tuple containing whether the boxes have horizontal and vertical overlap.

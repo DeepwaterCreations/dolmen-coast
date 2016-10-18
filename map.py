@@ -54,14 +54,17 @@ class Map(object):
         # http://roguecentral.org/doryen/articles/bsp-dungeon-generation/
         max_iters = 2
         margin = 3
-        if width <= margin or height <= margin:
+        if width <= 2*margin and height <= 2*margin:
             return
-        #TODO: Force direction if width too small to fit margin
-        # split_dir = random.choice(['h','v'])
-        #Weight direction based on ratio so I can try for more square-shaped sections
-        aspect_ratio = 1 - (width/height) if height > width else -(1 - height/width)
-        dir_select_num = (random.random() * 2) - 1
-        split_dir = 'v' if dir_select_num > aspect_ratio else 'h'
+        if width <= 2*margin:
+            split_dir = 'h'
+        elif height <= 2*margin:
+            split_dir = 'v'
+        else:
+            #Weight direction based on ratio so I can try for more square-shaped sections
+            aspect_ratio = 1 - (width/height) if height > width else -(1 - height/width)
+            dir_select_num = (random.random() * 2) - 1
+            split_dir = 'v' if dir_select_num > aspect_ratio else 'h'
         min_bound = (y + margin) if split_dir == 'h' else (x + margin)
         max_bound = ((y + height) - margin) if split_dir == 'h' else ((x + width) - margin)
         try:

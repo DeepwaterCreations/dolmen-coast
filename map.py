@@ -62,19 +62,32 @@ class Map(object):
             split_dir = 'v'
         else:
             #Weight direction based on ratio so I can try for more square-shaped sections
+            #First, set a threshold between 1 and -1. Selecting above the threshold will
+            #make a vertical slice, and selecting below it will make a horizontal one.
+            #The threshold is based on the ratio between the width and the height. Tall, skinny
+            #boxes get a >0 ratio. Short, fat ones get <0.
             aspect_ratio = 1 - (width/height) if height > width else -(1 - height/width)
-            dir_select_num = (random.random() * 2) - 1
+            #Select a random number between -1 and 1, weighted toward 0 via a beta distribution.
+            #This will weight the selection in favor of partitions that make the resulting boxes more "square"
+            #since a random number at 0 will select whatever the threshold decided was the short axis.
+            dir_select_num = (random.betavariate(5, 5) * 2) - 1
             split_dir = 'v' if dir_select_num > aspect_ratio else 'h'
+        #Now that we have an axis, pick a random position for the split between the ends of the box,
+        #offset by the specified margin.
         min_bound = (y + margin) if split_dir == 'h' else (x + margin)
         max_bound = ((y + height) - margin) if split_dir == 'h' else ((x + width) - margin)
-        try:
-            split_pos = random.randint(min_bound, max_bound)
-        except ValueError:
-            raise ValueError("ITER:{0} X:{1} Y:{2} Width:{3} Height:{4} min_bound:{5} max_bound:{6}".format(iter, x, y, width, height, min_bound, max_bound))
+        #TODO: Should this also be a beta distribution? Sure, why not, yeah?
+        split_pos = random.randint(min_bound, max_bound)
+
+        #TEST: Draw test tiles along the partition edge to visualize it.
         for tile_x in range(x, x+width):
             for tile_y in range(y, y+height):
                 if (split_dir == 'h' and tile_y == split_pos) or (split_dir == 'v' and tile_x == split_pos):
                         self.set(tile_x, tile_y, TileManager.test_tile)
+        #End test code
+
+        #Finally, call this function recursively on the two partitions.
+        #TODO: Terminate or not based on size? That should actually be decided before we do the partition.
         if iter < max_iters:
             new_width_1 = width if split_dir == 'h' else split_pos - x
             new_width_2 = width if split_dir == 'h' else (x + width) - split_pos
@@ -87,6 +100,8 @@ class Map(object):
 
             self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
             self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
+        #TODO: If this is the last iteration, create a mesa in the partition instead of partitioning it.
+        #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 
         #Build bridges between mesas
         #For each pair of mesas, get the set of unchecked mesas that are colinear.

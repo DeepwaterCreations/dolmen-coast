@@ -28,6 +28,10 @@ class Map(object):
             raise IndexError(e.args[0] + " X:{0} Y:{1} Width:{2} Height:{3}".format(x, y, self.width, self.height))
 
     def _create_map(self):
+        # self._create_map_default()
+        self._create_map_bsp(0, 0, self.width, self.height)
+
+    def _create_map_default(self):
         # num_mesas = 5
         mesa_max_radius = 6
         mesa_map_density = .02
@@ -45,6 +49,41 @@ class Map(object):
         # self.test_mesas()
 
         self._build_mesa_walls()
+    
+    def _create_map_bsp(self, x, y, width, height, iter=0):
+        # http://roguecentral.org/doryen/articles/bsp-dungeon-generation/
+        max_iters = 2
+        margin = 3
+        if width <= margin or height <= margin:
+            return
+        #TODO: Force direction if width too small to fit margin
+        # split_dir = random.choice(['h','v'])
+        #Weight direction based on ratio so I can try for more square-shaped sections
+        aspect_ratio = 1 - (width/height) if height > width else -(1 - height/width)
+        dir_select_num = (random.random() * 2) - 1
+        split_dir = 'v' if dir_select_num > aspect_ratio else 'h'
+        min_bound = (y + margin) if split_dir == 'h' else (x + margin)
+        max_bound = ((y + height) - margin) if split_dir == 'h' else ((x + width) - margin)
+        try:
+            split_pos = random.randint(min_bound, max_bound)
+        except ValueError:
+            raise ValueError("ITER:{0} X:{1} Y:{2} Width:{3} Height:{4} min_bound:{5} max_bound:{6}".format(iter, x, y, width, height, min_bound, max_bound))
+        for tile_x in range(x, x+width):
+            for tile_y in range(y, y+height):
+                if (split_dir == 'h' and tile_y == split_pos) or (split_dir == 'v' and tile_x == split_pos):
+                        self.set(tile_x, tile_y, TileManager.test_tile)
+        if iter < max_iters:
+            new_width_1 = width if split_dir == 'h' else split_pos - x
+            new_width_2 = width if split_dir == 'h' else (x + width) - split_pos
+            new_height_1 = height if split_dir == 'v' else split_pos - y
+            new_height_2 = height if split_dir == 'v' else (y + height) - split_pos
+            x1 = x
+            x2 = x if split_dir == 'h' else split_pos
+            y1 = y
+            y2 = y if split_dir == 'v' else split_pos
+
+            self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
+            self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
 
         #Build bridges between mesas
         #For each pair of mesas, get the set of unchecked mesas that are colinear.

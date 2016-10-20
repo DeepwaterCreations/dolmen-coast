@@ -20,7 +20,11 @@ class Patch(object):
 
     def set(self, x, y, tile):
         self._patch[y][x] = tile
-         
+
+    def dbgoutput(self):
+        dbgstr = "X:{0} Y:{1} width:{2} height:{3}".format(self.x, self.y, self.width, self.height)
+        return dbgstr + '\n' + self.__str__()
+
     def __str__(self):
         patchstring = ""
         for row in self._patch:

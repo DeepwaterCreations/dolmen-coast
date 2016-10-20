@@ -29,7 +29,7 @@ class Map(object):
 
     def _create_map(self):
         # self._create_map_default()
-        self._create_map_bsp(0, 0, self.width, self.height)
+        self._create_map_bsp(0, 0, self.width-1, self.height-1)
 
     def _create_map_default(self):
         # num_mesas = 5
@@ -52,10 +52,43 @@ class Map(object):
     
     def _create_map_bsp(self, x, y, width, height, iter=0):
         # http://roguecentral.org/doryen/articles/bsp-dungeon-generation/
-        max_iters = 2
-        margin = 3
-        if width <= 2*margin and height <= 2*margin:
-            return
+        margin = 4
+        max_iters = 10
+        if width <= 2*margin and height <= 2*margin or iter >= max_iters:
+            #End case
+            #Build mesa
+            mesa_x = random.randint(x, (x + width)-1)
+            mesa_y = random.randint(y, (y + height)-1)
+            maxradius = (min((x+width) - mesa_x, (y+height) - mesa_y)-1)//2
+            mesa_r = 0 if maxradius <= 0 else random.randint(0, maxradius)
+
+            new_mesa = Mesa(mesa_x, mesa_y, mesa_r)
+            if new_mesa.x + new_mesa.width >= self.width or new_mesa.y + new_mesa.height >= self.height:
+                raise IndexError("Mesa X:{0} Mesa Y{1} Mesa R:{2} \n{3}".format( mesa_x, mesa_y, mesa_r, new_mesa.dbgoutput()))
+            self._mesas.append(new_mesa)
+            self.apply_patch(new_mesa)
+            return new_mesa
+        else:
+            #Recursive step
+            split_dir, split_pos = self._get_bsp_partition(x, y, width, height, margin)
+        #TODO: Terminate or not based on size? That should actually be decided before we do the partition.
+        # if iter < max_iters:
+        # if width * height > 100 
+            new_width_1 = width if split_dir == 'h' else split_pos - x
+            new_width_2 = width if split_dir == 'h' else (x + width) - split_pos
+            new_height_1 = height if split_dir == 'v' else split_pos - y
+            new_height_2 = height if split_dir == 'v' else (y + height) - split_pos
+            x1 = x
+            x2 = x if split_dir == 'h' else split_pos
+            y1 = y
+            y2 = y if split_dir == 'v' else split_pos
+
+            self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
+            self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
+        #TODO: If this is the last iteration, create a mesa in the partition instead of partitioning it.
+        #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
+
+    def _get_bsp_partition(self, x, y, width, height, margin):
         if width <= 2*margin:
             split_dir = 'h'
         elif height <= 2*margin:
@@ -86,56 +119,7 @@ class Map(object):
                         self.set(tile_x, tile_y, TileManager.test_tile)
         #End test code
 
-        #Finally, call this function recursively on the two partitions.
-        #TODO: Terminate or not based on size? That should actually be decided before we do the partition.
-        if iter < max_iters:
-            new_width_1 = width if split_dir == 'h' else split_pos - x
-            new_width_2 = width if split_dir == 'h' else (x + width) - split_pos
-            new_height_1 = height if split_dir == 'v' else split_pos - y
-            new_height_2 = height if split_dir == 'v' else (y + height) - split_pos
-            x1 = x
-            x2 = x if split_dir == 'h' else split_pos
-            y1 = y
-            y2 = y if split_dir == 'v' else split_pos
-
-            self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
-            self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
-        #TODO: If this is the last iteration, create a mesa in the partition instead of partitioning it.
-        #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
-
-        #Build bridges between mesas
-        #For each pair of mesas, get the set of unchecked mesas that are colinear.
-        #Trim this list to the closest neighbor in each direction.
-        #Then, for each neighbor, probabilistically build a bridge or don't.
-        for checked_idx, mesa in enumerate(self._mesas):
-            closest_mesas = {'N':None, 'E':None, 'S':None, 'W':None}
-            for mesa2 in self._mesas[checked_idx+1:]:
-                h_overlap, v_overlap =  self._check_overlap(mesa, mesa2)
-                if self._check_collision(mesa, mesa2):
-                    continue
-                if h_overlap:
-                    relative = mesa2.x - mesa.x
-                    dir = 'E' if relative > 0 else 'W'
-                    distance = abs(relative)
-                    if closest_mesas[dir] != None:
-                        prev_distance = abs(closest_mesas[dir].x - mesa.x)
-                        if distance < prev_distance:
-                            closest_mesas[dir] = mesa2
-                    else:
-                        closest_mesas[dir] = mesa2
-                if v_overlap:
-                    relative = mesa2.y - mesa.y
-                    dir = 'N' if relative > 0 else 'S'
-                    distance = abs(relative)
-                    if closest_mesas[dir] != None:
-                        prev_distance = abs(closest_mesas[dir].y - mesa.y)
-                        if distance < prev_distance:
-                            closest_mesas[dir] = mesa2
-                    else:
-                        closest_mesas[dir] = mesa2
-            for dir in ['N', 'E', 'S', 'W']:
-                if closest_mesas[dir] != None and random.randint(0, 3) == 0:
-                    self.make_bridge(mesa, closest_mesas[dir], dir)
+        return split_dir, split_pos
 
     def _build_mesa_walls(self):
         """For each floor tile on the map, turn all orthogonal neighbors that are impass

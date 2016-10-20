@@ -229,6 +229,9 @@ class Map(object):
         patch = patchsource._patch
         for i_y, row in enumerate(patch):
             for i_x, tile in enumerate(row):
+                if i_y+patchsource.y >= self.height or i_x+patchsource.x >= self.width:
+                    raise IndexError("Patch out of bounds w{0} h{1} at {2},{3}:\n \
+                            {4}".format(self.width, self.height, i_x+patchsource.x, i_y+patchsource.y, patchsource.dbgoutput()))
                 if tile != None:
                     self.set(i_x + patchsource.x, i_y + patchsource.y, tile)
 

@@ -76,7 +76,7 @@ class Mesa(Patch):
         if invert:
             circle_space_perp_coord *= -1
         perp_coord = circle_space_perp_coord + (self.center_y, self.center_x)[axis]
-        par_coord = offset_from_center + (center_x, center_y)[axis]
+        par_coord = offset_from_center + (self.center_x, self.center_y)[axis]
         return ((par_coord, perp_coord)(perp_coord, par_coord))[axis]
 
 

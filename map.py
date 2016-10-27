@@ -208,21 +208,6 @@ class Map(object):
         self._bridges.append(new_bridge)
         self.apply_patch(new_bridge)
 
-    def _get_bridge_coordinate(self, b, center_b, center_c, ribwidth_func, invert=False):
-        """b is an x or y coordinate
-            center_b is the center x or y coordinate of the mesa
-            center_b is the coordinate along the perpendicular axis
-            ribwidth_func is the mesa's get_ribwidth
-            invert = true if the bridge is pointing in the negative direction
-            Returns a global coordinate of a point on the edge of a mesa
-            along an axis perpendicular to b.
-            """
-        circ_bridge_coord = b - center_b
-        c_offset = ribwidth_func(circ_bridge_coord) + 1
-        if invert:
-            c_offset *= -1
-        return center_c + c_offset
-
 
     def apply_patch(self, patchsource):
         """Adds a set of tiles to the map from an object that has a patch and a set of x,y coordinates"""

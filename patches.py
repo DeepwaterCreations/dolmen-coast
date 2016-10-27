@@ -65,6 +65,19 @@ class Mesa(Patch):
         """
         return int(math.sqrt(abs(self.r**2 - offset**2)))
 
+    def get_edge_coordinates(self, offset_from_center, axis, invert=False):
+        """ Returns the coordinates of a point on the edge of the mesa perpendicular
+            to a given axis at a given offset from the center.
+            offset_from_center is the number of tiles away from the center along the specified axis
+            axis is 0 if x, 1 if y
+            invert = true if the edge should be in the negative direction.
+            """
+        circle_space_perp_coord = self.get_ribwidth(offset_from_center) + 1
+        if invert:
+            circle_space_perp_coord *= -1
+        perp_coord = circle_space_perp_coord + (self.center_y, self.center_x)[axis]
+        par_coord = offset_from_center + (center_x, center_y)[axis]
+        return ((par_coord, perp_coord)(perp_coord, par_coord))[axis]
 
 
 class Bridge(Patch):

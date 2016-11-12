@@ -119,6 +119,56 @@ class Map(object):
                 start_point = (start_point[1], start_point[0])
                 end_point = (end_point[1], end_point[0])
 
+            bridge_endpoints = [start_point]
+            point = list(start_point)
+
+            step_dirs = {'N': (0, -1),
+                        'E': (1, 0),
+                        'S': (0, 1),
+                        'W': (-1, 0)}
+            direction = 'S'
+            next_point = point + step_dirs[direction]
+            stuck_direction_reserve = ['E', 'N', 'W', 'S']
+            while bridge_endpoints[-1] != end_point:
+                
+                #Keep going forward until I hit a wall, the halfway point, or colinearity.
+                #When I bend, bend in the direction of "forward" if possible
+                #Got to ensure that end_point isn't totally blocked by a mesa
+                #Possibly also make new mesas when I bend?
+
+                #Okay, how about this: Draw a line from start to min(dist to end/2, edge of nearest mesabox)
+                #Then turn and repeat, but don't do the /2 bit, until we get there.
+                #Finding the nearest mesa will be a bit of a butt, though.
+                #Maybe combine the 2: Define a Z, then walk along it until a mesa is hit, and if so, back up ~2-3 spaces and try again
+                #with a bend there?
+
+                #Maybe build simultaneously from both sides and stop when they meet?
+
+
+                if next_point == end_point:
+                    break
+
+                #Check for collision
+                # if self.get(next_point) == TileManager.wall:
+                #     if len(stuck_direction_reserve) == 0:
+                #         point = (point[1], point[0]) if split_dir == 'v' else point
+                #         print "Bridge generation terminated prematurely at {0}".format(point)
+                #         break
+                #     new_direction = stuck_direction_reserve.pop()
+                #     next_point = point + step_dirs[new_direction]
+                #     continue
+                #Check if we're at the halfway point vertically
+                #Check if we're lined up along the y axis
+                #Check if we're already there
+                
+                #Either we turn, or we don't. If we saw a collision, reached the first elbow,
+                #or reached the second elbow, we turn. We also need to turn if we went out of our way
+                #to avoid a mesa.
+
+
+            # TODO: Walk the map from start_point to end_point, checking mesa collision as I go,
+            # and building an elbow (multiple elbows?) at the halfway point.
+
             return mesas_a + mesas_b
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 

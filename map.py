@@ -109,6 +109,11 @@ class Map(object):
 
             start_point = _get_terminal_point(m1, 'S' if split_dir == 'h' else 'E')
             end_point = _get_terminal_point(m2, 'N' if split_dir == 'h' else 'W')
+
+            #TEST
+            # self.set(*start_point, tile=TileManager.test_1)
+            # self.set(*end_point, tile=TileManager.test_2)
+
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 
     def _get_bsp_partition(self, x, y, width, height, margin):

@@ -114,6 +114,7 @@ class Map(object):
             # self.set(*start_point, tile=TileManager.test_1)
             # self.set(*end_point, tile=TileManager.test_2)
 
+            return mesas_a + mesas_b
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 
     def _get_bsp_partition(self, x, y, width, height, margin):

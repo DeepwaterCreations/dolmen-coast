@@ -17,6 +17,8 @@ class TileManager(object):
     wall = Tile('*')
     bridge = Tile('#')
     test_tile = Tile('@')
+    test_1 = Tile('1')
+    test_2 = Tile('2')
 
     def __init__(self):
         self.init_colors()
@@ -29,6 +31,8 @@ class TileManager(object):
         curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
         curses.init_pair(5, curses.COLOR_RED, curses.COLOR_BLACK)
         TileManager.test_tile.color = curses.color_pair(2)
+        TileManager.test_1.color = curses.color_pair(5)
+        TileManager.test_2.color = curses.color_pair(5)
         TileManager.impass.color = curses.color_pair(2)
         TileManager.wall.color = curses.color_pair(3)
         TileManager.floor.color = curses.color_pair(4)

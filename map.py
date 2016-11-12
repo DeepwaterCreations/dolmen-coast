@@ -85,7 +85,15 @@ class Map(object):
 
             mesas_a = self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
             mesas_b = self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
-        #TODO: If this is the last iteration, create a mesa in the partition instead of partitioning it.
+
+            #Join the two partitions via a bridge
+            #I need to find a pair of mesas, one in each partition, that are orthogonally colinear
+            #and that don't have mesas between them.
+            #For the first condition, I have that solved.
+            #For the second, I can check the other mesas' bounding boxes
+            #against a box around mesa a and mesa b.
+            #BSP is great for making sure my graph is fully connected, but
+            #not so great for precomputing any of this stuff, alas.
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 
     def _get_bsp_partition(self, x, y, width, height, margin):

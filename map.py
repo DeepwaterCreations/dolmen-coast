@@ -114,6 +114,11 @@ class Map(object):
             # self.set(*start_point, tile=TileManager.test_1)
             # self.set(*end_point, tile=TileManager.test_2)
 
+            #Translate into h-split space:
+            if split_dir == 'v':
+                start_point = (start_point[1], start_point[0])
+                end_point = (end_point[1], end_point[0])
+
             return mesas_a + mesas_b
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 

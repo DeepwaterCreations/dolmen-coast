@@ -30,7 +30,7 @@ class TileManager(object):
         curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
         curses.init_pair(4, curses.COLOR_YELLOW, curses.COLOR_BLACK)
         curses.init_pair(5, curses.COLOR_RED, curses.COLOR_BLACK)
-        TileManager.test_tile.color = curses.color_pair(2)
+        TileManager.test_tile.color = curses.color_pair(5)
         TileManager.test_1.color = curses.color_pair(5)
         TileManager.test_2.color = curses.color_pair(5)
         TileManager.impass.color = curses.color_pair(2)

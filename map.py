@@ -67,7 +67,7 @@ class Map(object):
                 raise IndexError("Mesa X:{0} Mesa Y{1} Mesa R:{2} \n{3}".format( mesa_x, mesa_y, mesa_r, new_mesa.dbgoutput()))
             self._mesas.append(new_mesa)
             self.apply_patch(new_mesa)
-            return new_mesa
+            return [new_mesa]
         else:
             #Recursive step
             split_dir, split_pos = self._get_bsp_partition(x, y, width, height, margin)
@@ -83,8 +83,8 @@ class Map(object):
             y1 = y
             y2 = y if split_dir == 'v' else split_pos
 
-            self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
-            self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
+            mesas_a = self._create_map_bsp(x1, y1, new_width_1, new_height_1, iter + 1)
+            mesas_b = self._create_map_bsp(x2, y2, new_width_2, new_height_2, iter + 1)
         #TODO: If this is the last iteration, create a mesa in the partition instead of partitioning it.
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 

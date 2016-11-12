@@ -94,6 +94,21 @@ class Map(object):
             #against a box around mesa a and mesa b.
             #BSP is great for making sure my graph is fully connected, but
             #not so great for precomputing any of this stuff, alas.
+            m1 = random.choice(mesas_a)
+            m2 = random.choice(mesas_b)
+            #What if the partitions have no colinear mesas? This is extremely likely.
+            #I could make a new mesa. Problem: Then I break the whole point of having BSP.
+            #I could connect them with a Z, which is what the source website says to do. <-Let's do this one.
+            #I could move the mesas. That might make everthing too "griddy"
+            def _get_terminal_point(mesa, side):
+                axis = 0 if side in ['E', 'W'] else 0
+                invert = side in ['N', 'W']
+                offset_from_center = random.randint(-mesa.r, mesa.r)
+                point = mesa.get_edge_coordinates(offset_from_center, axis, invert)
+                return point
+
+            start_point = _get_terminal_point(m1, 'S' if split_dir == 'h' else 'E')
+            end_point = _get_terminal_point(m2, 'N' if split_dir == 'h' else 'W')
         #TODO: Get back the next iteration's partitions/mesas, join them together with a bridge.
 
     def _get_bsp_partition(self, x, y, width, height, margin):

@@ -19,7 +19,7 @@ def main(stdscr):
     #Clear the terminal
     stdscr.clear()
 
-    #Create a new map to fill the screen. This is where the magic happens.
+    #Create a new map to fill the screen.
     gamemap = Gamemap(curses.COLS, curses.LINES-1)
 
     #Output debugging messages in the upper-left corner

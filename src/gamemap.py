@@ -1,12 +1,10 @@
-from __future__ import division
-
 import random
 import math
 
 from patches import Mesa, Bridge
 from tilemanager import TileManager
 
-class Map(object):
+class Gamemap(object):
 
     def __init__(self, width, height):
         self.height = height
@@ -28,8 +26,8 @@ class Map(object):
             raise IndexError(e.args[0] + " X:{0} Y:{1} Width:{2} Height:{3}".format(x, y, self.width, self.height))
 
     def _create_map(self):
-        # self._create_map_default()
-        self._create_map_bsp(0, 0, self.width-1, self.height-1)
+        self._create_map_default()
+        # self._create_map_bsp(0, 0, self.width-1, self.height-1)
 
     def _create_map_default(self):
         # num_mesas = 5

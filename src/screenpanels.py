@@ -92,6 +92,7 @@ class TextPanel():
         """Move the next line back to the top of the window"""
         self.next_line = 1
 
+##=======================================================##
 
 class MessagePanel(TextPanel):
     """Displays game messages to the player"""
@@ -126,6 +127,8 @@ class MessagePanel(TextPanel):
             self.window.clear()
             self._reset_line_position()
         self.window.refresh()
+
+##=======================================================##
 
 class ListMenu(TextPanel):
     """Displays a list of selectable options"""
@@ -192,3 +195,4 @@ class ListMenu(TextPanel):
         else:
             self.handle_key(self.window.getkey())
 
+##=======================================================##

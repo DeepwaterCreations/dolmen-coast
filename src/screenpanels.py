@@ -196,3 +196,40 @@ class ListMenu(TextPanel):
             self.handle_key(self.window.getkey())
 
 ##=======================================================##
+
+class GamePanel():
+    """ Shows the game world. This is the main game screen. """
+
+    def __init__(self, window):
+        self.window = window
+
+    def display(self, maparray, center_on_coords=None):
+
+        w_height, w_width = self.window.getmaxyx()
+        m_height = len(maparray)
+        m_width = len(maparray[0])
+        if center_on_coords == None:
+            center_on_coords = (m_width//2, m_height//2)
+        center_x, center_y = center_on_coords
+
+        #Offset is the upper-left corner of the view
+        #We need to constrain the view so that we don't
+        #scroll past the boundaries of the map.
+        #View width and height are the same as window width and height
+        max_x_offset = m_width - w_width
+        x_offset = max(center_x - w_width//2, 0) #Left edge
+        x_offset = min(x_offset, max_x_offset) #Right edge
+
+        max_y_offset = m_height - w_height
+        y_offset = max(center_y - w_height//2, 0) #Top edge
+        y_offset = min(y_offset, max_y_offset) #Bottom edge
+    
+        #Iterate over the generated map and display a subset of its contents 
+        #that fits in the game window
+        for y, row in enumerate(maparray[y_offset:y_offset + w_height - 1]):
+            for x, tile in enumerate(row[x_offset:x_offset + w_width - 1]):
+                try:
+                    self.window.addch(y, x, tile.char, tile.color)
+                except TypeError:
+                    raise TypeError("X:{0} Y:{1} char:{2} color:{3}".format(x, y, tile.char, tile.color))
+
